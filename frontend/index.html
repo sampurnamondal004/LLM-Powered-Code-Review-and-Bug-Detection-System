@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Code Reviewer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <h1>🤖 AI Code Review & Bug Detection</h1>
+    <p class="subtitle">
+      Paste your code and get instant AI-powered review
+    </p>
+
+    <label for="language">Language</label>
+    <select id="language">
+      <option value="python">Python</option>
+      <option value="cpp">C++</option>
+      <option value="javascript">JavaScript</option>
+    </select>
+
+    <label for="code">Your Code</label>
+    <textarea
+      id="code"
+      placeholder="Paste your code here..."
+      spellcheck="false"
+    ></textarea>
+
+    <button onclick="reviewCode()">🔍 Review Code</button>
+
+    <div id="loader" class="hidden">⏳ Analyzing...</div>
+
+    <div class="output">
+      <h2>🧠 AI Review</h2>
+      <pre id="llmOutput"></pre>
+
+      <h2>🛠 Static Analysis</h2>
+      <pre id="staticOutput"></pre>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
