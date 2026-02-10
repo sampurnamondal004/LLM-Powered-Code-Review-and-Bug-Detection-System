@@ -1,65 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>LLM Code Review</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    textarea { width: 100%; height: 150px; }
-    button { margin-top: 10px; padding: 10px; }
-    pre { background: #111; color: #0f0; padding: 10px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LLM Code Reviewer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
 
-  <h2>LLM Code Review System</h2>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-  <label>Language:</label>
-  <select id="language">
-    <option value="python">Python</option>
-    <option value="cpp">C++</option>
-    <option value="java">Java</option>
-  </select>
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-blue-400">🚀 LLM Code Review & Bug Detection</h1>
+    <span class="text-sm text-slate-400">Powered by Groq + LLaMA</span>
+  </header>
 
-  <br><br>
+  <!-- Main -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
 
-  <label>Code:</label>
-  <textarea id="code" placeholder="Paste your code here..."></textarea>
+    <!-- Left: Code Input -->
+    <section class="flex flex-col h-full">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold text-slate-200">Source Code</h2>
+        <select id="language"
+          class="bg-slate-800 border border-slate-700 rounded px-3 py-1 text-sm">
+          <option value="python">Python</option>
+          <option value="cpp">C++</option>
+          <option value="javascript">JavaScript</option>
+        </select>
+      </div>
 
-  <br>
-  <button onclick="reviewCode()">Review Code</button>
+      <textarea
+        id="codeInput"
+        placeholder="Paste your code here..."
+        class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+      ></textarea>
 
-  <h3>AI Review Output:</h3>
-  <pre id="output">Waiting for review...</pre>
+      <button
+        id="btn"
+        onclick="submitReview()"
+        class="mt-4 bg-blue-600 hover:bg-blue-500 transition rounded-lg py-3 font-semibold disabled:opacity-60"
+      >
+        Analyze Code
+      </button>
+    </section>
+
+    <!-- Right: Output -->
+    <section class="flex flex-col gap-4">
+
+      <!-- Static Analysis -->
+      <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+        <h2 class="text-yellow-400 font-semibold mb-2">🔍 Static Analysis</h2>
+        <pre
+          id="staticOutput"
+          class="text-sm text-slate-300 whitespace-pre-wrap min-h-[100px]"
+        >Waiting for analysis…</pre>
+      </div>
+
+      <!-- AI Review -->
+      <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 flex-1">
+        <h2 class="text-green-400 font-semibold mb-2">🤖 AI Senior Engineer Review</h2>
+        <div
+          id="aiOutput"
+          class="text-sm text-slate-300 whitespace-pre-wrap"
+        >AI feedback will appear here…</div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-slate-900 px-6 py-3 text-xs text-slate-400 text-center">
+    Built by Sampurna • FastAPI • Groq • LLaMA
+  </footer>
 
   <script>
-    async function reviewCode() {
-      const code = document.getElementById("code").value;
+    async function submitReview() {
+      const code = document.getElementById("codeInput").value;
       const language = document.getElementById("language").value;
+      const btn = document.getElementById("btn");
 
-      document.getElementById("output").textContent = "Reviewing...";
+      if (!code.trim()) {
+        alert("Please paste some code!");
+        return;
+      }
+
+      btn.innerText = "Analyzing...";
+      btn.disabled = true;
+
+      document.getElementById("staticOutput").innerText = "Running analysis...";
+      document.getElementById("aiOutput").innerText = "Thinking like a senior engineer…";
 
       try {
         const response = await fetch(
           "https://llm-powered-code-review-and-bug-det.vercel.app/review",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code, language })
           }
         );
 
         const data = await response.json();
-        document.getElementById("output").textContent = data.ai_review;
+
+        document.getElementById("staticOutput").innerText = data.static_analysis;
+        document.getElementById("aiOutput").innerText = data.ai_review;
 
       } catch (err) {
-        document.getElementById("output").textContent =
-          "Error connecting to backend";
+        alert("Failed to connect to backend.");
+      } finally {
+        btn.innerText = "Analyze Code";
+        btn.disabled = false;
       }
     }
   </script>
 
 </body>
 </html>
+
