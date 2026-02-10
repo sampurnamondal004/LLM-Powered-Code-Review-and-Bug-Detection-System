@@ -1,68 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Code Reviewer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>LLM Code Review</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    textarea { width: 100%; height: 150px; }
+    button { margin-top: 10px; padding: 10px; }
+    pre { background: #111; color: #0f0; padding: 10px; }
+  </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-8">
-    <div class="max-w-5xl mx-auto">
-        <h1 class="text-3xl font-bold mb-4 text-blue-400">🚀 LLM Code Reviewer</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <select id="language" class="bg-gray-800 p-2 rounded mb-2 w-full border border-gray-700">
-                    <option value="python">Python</option>
-                    <option value="cpp">C++</option>
-                    <option value="javascript">JavaScript</option>
-                </select>
-                <textarea id="codeInput" class="w-full h-[500px] bg-gray-800 text-mono p-4 rounded border border-gray-700" placeholder="Paste your code here..."></textarea>
-                <button onclick="submitReview()" id="btn" class="mt-4 bg-blue-600 hover:bg-blue-500 w-full py-3 rounded font-bold transition">Analyze Code</button>
-            </div>
+<body>
 
-            <div class="space-y-4">
-                <div class="bg-gray-800 p-4 rounded border border-gray-700">
-                    <h2 class="text-yellow-400 font-bold mb-2">🔍 Static Analysis (Pylint)</h2>
-                    <pre id="staticOutput" class="text-sm whitespace-pre-wrap text-gray-300">Results will appear here...</pre>
-                </div>
-                <div class="bg-gray-800 p-4 rounded border border-gray-700">
-                    <h2 class="text-green-400 font-bold mb-2">🤖 AI Senior Engineer Review</h2>
-                    <div id="aiOutput" class="text-sm whitespace-pre-wrap text-gray-300">AI feedback will appear here...</div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <h2>LLM Code Review System</h2>
 
-    <script>
-        async function submitReview() {
-            const code = document.getElementById('codeInput').value;
-            const language = document.getElementById('language').value;
-            const btn = document.getElementById('btn');
-            
-            if(!code) return alert("Please paste some code!");
+  <label>Language:</label>
+  <select id="language">
+    <option value="python">Python</option>
+    <option value="cpp">C++</option>
+    <option value="java">Java</option>
+  </select>
 
-            btn.innerText = "Analyzing...";
-            btn.disabled = true;
+  <br><br>
 
-            try {
-                const response = await fetch('http://127.0.0.1:8000/review', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ code, language })
-                });
-                
-                const data = await response.json();
-                
-                document.getElementById('staticOutput').innerText = data.static_analysis;
-                document.getElementById('aiOutput').innerText = data.ai_review;
-            } catch (err) {
-                alert("Error connecting to backend!");
-            } finally {
-                btn.innerText = "Analyze Code";
-                btn.disabled = false;
-            }
-        }
-    </script>
+  <label>Code:</label>
+  <textarea id="code" placeholder="Paste your code here..."></textarea>
+
+  <br>
+  <button onclick="reviewCode()">Review Code</button>
+
+  <h3>AI Review Output:</h3>
+  <pre id="output">Waiting for review...</pre>
+
+  <script>
+    async function reviewCode() {
+      const code = document.getElementById("code").value;
+      const language = document.getElementById("language").value;
+
+      document.getElementById("output").textContent = "Reviewing...";
+
+      try {
+        const response = await fetch(
+          "https://llm-powered-code-review-and-bug-det.vercel.app/review",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ code, language })
+          }
+        );
+
+        const data = await response.json();
+        document.getElementById("output").textContent = data.ai_review;
+
+      } catch (err) {
+        document.getElementById("output").textContent =
+          "Error connecting to backend";
+      }
+    }
+  </script>
+
 </body>
 </html>
