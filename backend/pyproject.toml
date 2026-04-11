@@ -1,0 +1,13 @@
+[project]
+name = "llm-code-review"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "python-dotenv",
+    "google-generativeai",
+    "groq",
+    "openai",
+    "requests"
+]
